@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -g -Wall -pedantic
+CFLAGS = -g -Wall -pedantic -Iincludes
 
-APPFILES = app.c
-SLAVEFILES = slave.c
-VIEWFILES = view.c
+APPFILES = ./src/app.c
+SLAVEFILES = ./src/slave.c
+VIEWFILES = ./src/view.c
 
 APPOBJ = $(APPFILES:.c=.o)
 SLAVEOBJ = $(SLAVEFILES:.c=.o)
@@ -19,6 +19,7 @@ all:
 	make app
 	make slave
 	make view
+	make cleanObj
 
 app: $(APPBINARY)
 
@@ -39,4 +40,8 @@ $(VIEWBINARY): $(VIEWOBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(APPOBJ) $(SLAVEOBJ) $(VIEWOBJ) $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY)
+	rm -f $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY)
+	make cleanObj
+
+cleanObj:
+	rm -f $(APPOBJ) $(SLAVEOBJ) $(VIEWOBJ)
