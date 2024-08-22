@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "slave.h": "c",
+        "stdio.h": "c",
+        "types.h": "c"
+    }
+}

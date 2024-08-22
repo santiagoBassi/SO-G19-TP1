@@ -13,13 +13,9 @@ APPBINARY = app
 SLAVEBINARY = slave
 VIEWBINARY = view
 
-.PHONY: all clean app slave view
+.PHONY: all clean app slave view cleanObj
 
-all: 
-	make app
-	make slave
-	make view
-	make cleanObj
+all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) cleanObj
 
 app: $(APPBINARY)
 
