@@ -1,7 +1,6 @@
 #include "slave.h"
 
 int main(void){
-    
     char buffer[256];
 
     while(TRUE){
