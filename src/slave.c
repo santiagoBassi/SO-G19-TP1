@@ -1,19 +1,58 @@
 #include "slave.h"
 
-int main(void){
+int main(void)
+{
+
+    char filesToProcess[BUFFER_SIZE];
+    char bufferHash[BUFFER_SIZE];
     
-    char buffer[256];
+    char * argv[3];
+    argv[0] = MD5_PATH;
 
-    while(TRUE){
-        fgets(buffer, 256, stdin);
-        int pid = fork();
-        if(pid != 0){
-            printf("Soy el padre");//tengo que acomodar los fd y llamar al
-        }else{
-            printf("Soy el hijo");//execev() ... 
+
+    int pipeFd[2];
+    
+
+    while (TRUE) {    
+        
+        int p1 = pipe(pipeFd);
+        if(p1 == -1){
+            perror("Error: Failed to create pipe.");
+            //ACA QUE HACEMOS?? 
         }
-        return 0;
+        
+        fgets(filesToProcess, 256, stdin);
+        filesToProcess[strcspn(filesToProcess, "\n")] = 0;
+        
+        
+        int pid = fork();
+        
+        if (pid != 0) {
+            close(pipeFd[1]);
+
+            waitpid(pid, NULL, 0);
+
+            read(pipeFd[0],bufferHash, 256);
+            puts(bufferHash);
+            bufferHash[0]=0;
+            close(pipeFd[0]);
+        }
+        else {
+            close(pipeFd[0]);
+            close(1);
+            dup(pipeFd[1]);
+            close(pipeFd[1]);
+            //la salida estandar del hijo ahora mira al pipe asi md5 manda la salida al pipe y slave la puede leer
+
+            
+            
+            //tengo que copiar el argumento para que ejecute con el file
+            argv[1] = filesToProcess;
+            execve(MD5_PATH, argv, NULL);
+            
+            return 0;
+        }
+       
+    
     }
-
-
 }

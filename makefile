@@ -13,15 +13,9 @@ APPBINARY = app
 SLAVEBINARY = slave
 VIEWBINARY = view
 
-.PHONY: all clean app slave view cleanObj
+.PHONY: all clean cleanObj
 
 all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) cleanObj
-
-app: $(APPBINARY)
-
-slave: $(SLAVEBINARY)
-
-view: $(VIEWBINARY)
 
 $(APPBINARY): $(APPOBJ)
 	$(CC) $(CFLAGS) -o $(APPBINARY) $(APPOBJ)
