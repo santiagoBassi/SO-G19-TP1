@@ -4,8 +4,14 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
 
-#define TRUE 1
+#define MD5_PATH "/usr/bin/md5sum"
+#define BUFFER_SIZE 256
 
+#define R_END 0
+#define W_END 1
 
 #endif

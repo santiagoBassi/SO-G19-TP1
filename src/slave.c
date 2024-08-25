@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int main(void){
+/*
     char *line = NULL;
     size_t linecap = 0;
     ssize_t linelen;
@@ -16,21 +16,53 @@ int main(void){
     }
 
     return 0;
-    /*
-    char buffer[256];
+*/
+int main(void) {
+    char bufferHash[BUFFER_SIZE]={0};
+    
+    char * argv[3] = {NULL};
+    argv[0] = MD5_PATH;
 
-    while(TRUE){
-        read(STDIN_FILENO, buffer, 256);
-        printf("%s\n", buffer);
-        int pid = fork();
-        if(pid != 0){
-            printf("Soy el padre");//tengo que acomodar los fd y llamar al
-        } else{
-            printf("Soy el hijo");//execev() ... 
+    int pipeFd[2];
+
+    char *line = NULL;
+    size_t linecap = 0;
+    ssize_t linelen;
+
+    while ((linelen = getline(&line, &linecap, stdin)) > 0) {
+        line[linelen - 1] = '\0';
+
+        int p1 = pipe(pipeFd);
+        if(p1 == -1){
+            fprintf(stderr, "Error: Failed to create pipe");
+            //ACA QUE HACEMOS?? 
         }
-        return 0;
+        
+        int pid = fork();
+        
+        if (pid != 0) {
+            close(pipeFd[W_END]);
+
+            waitpid(pid, NULL, 0);
+
+            int charsRead = read(pipeFd[R_END], bufferHash, BUFFER_SIZE);
+            bufferHash[charsRead - 1] = 0;
+            printf("%s", bufferHash);
+            fflush(stdout);
+             
+            bufferHash[0] = 0;
+            close(pipeFd[R_END]);
+       } else {
+            close(pipeFd[R_END]);
+            close(STDOUT_FILENO);
+
+            dup(pipeFd[W_END]);
+            close(pipeFd[W_END]);
+
+            argv[1] = line;
+            execve(MD5_PATH, argv, NULL);
+        }
     }
 
     return 0;
-    */
 }

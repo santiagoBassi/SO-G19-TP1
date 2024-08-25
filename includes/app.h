@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 #define R_END 0
 #define W_END 1
