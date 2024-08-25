@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -pedantic -Iincludes
+CFLAGS = -g -Wall -pedantic -Iincludes -std=c99 -Werror
 
 APPFILES = ./src/app.c
 SLAVEFILES = ./src/slave.c
@@ -15,7 +15,7 @@ VIEWBINARY = view
 
 .PHONY: all clean cleanObj
 
-all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) cleanObj
+all:  $(SLAVEBINARY) $(VIEWBINARY) cleanObj #$(APPBINARY)
 
 $(APPBINARY): $(APPOBJ)
 	$(CC) $(CFLAGS) -o $(APPBINARY) $(APPOBJ)

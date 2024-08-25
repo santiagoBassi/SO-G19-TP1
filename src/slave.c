@@ -1,12 +1,14 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
 #include "slave.h"
 
-int main(void)
-{
+int main(void) {
 
     char filesToProcess[BUFFER_SIZE];
-    char bufferHash[BUFFER_SIZE];
+    char bufferHash[BUFFER_SIZE]={0};
     
-    char * argv[3];
+    char * argv[3] = {NULL};
     argv[0] = MD5_PATH;
 
 
@@ -17,7 +19,7 @@ int main(void)
         
         int p1 = pipe(pipeFd);
         if(p1 == -1){
-            perror("Error: Failed to create pipe.");
+            perror("Error: Failed to create pipe");
             //ACA QUE HACEMOS?? 
         }
         
@@ -32,12 +34,14 @@ int main(void)
 
             waitpid(pid, NULL, 0);
 
-            read(pipeFd[0],bufferHash, 256);
+            int charsRead = read(pipeFd[0],bufferHash, 256);
+            bufferHash[charsRead] = 0;
             puts(bufferHash);
+             
             bufferHash[0]=0;
             close(pipeFd[0]);
-        }
-        else {
+
+       } else {
             close(pipeFd[0]);
             close(1);
             dup(pipeFd[1]);
