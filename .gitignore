@@ -57,3 +57,5 @@ slave
 app
 
 .bash_history
+.lesshst
+compile_commands.json
