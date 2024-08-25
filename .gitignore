@@ -58,3 +58,7 @@ app
 
 .bash_history
 .vscode
+=======
+.lesshst
+compile_commands.json
+>>>>>>> f62734e4f27be14dc5b9343b37a583bb2fe47f82
