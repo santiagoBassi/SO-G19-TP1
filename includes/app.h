@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#define R_END 0
+#define W_END 1
+
+#define SLAVE_OUTPUT_MAX_LEN 256
+
 #define MAX_NUMBER_OF_SLAVES 5
 
 #define SLAVE_BIN_NAME "./slave"
@@ -16,6 +21,7 @@ typedef struct {
 
 typedef struct {
     pid_t pid;
+    char finished_job;
     slave_pipes pipes;
 } slave_worker;
 
