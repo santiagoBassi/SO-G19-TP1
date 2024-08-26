@@ -13,7 +13,7 @@
 #define MAX_NUMBER_OF_SLAVES 5
 
 #define SLAVE_BIN_NAME "./slave"
-#define OUTPUT_FILE_NAME "./files"
+#define OUTPUT_FILE_NAME "./result"
 #define OUTPUT_FILE_PERMS 0777
 char* const slave_args[] = {SLAVE_BIN_NAME, NULL};
 
