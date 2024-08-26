@@ -56,7 +56,7 @@ view
 slave
 app
 
-result
+result.txt
 
 #editor configs
 .lesshst

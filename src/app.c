@@ -91,7 +91,8 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
 
             if (FD_ISSET(slave_workers[i].pipes.out[R_END], &to_read_fds)) {
                 char buff[SLAVE_OUTPUT_MAX_LEN];
-                read(slave_workers[i].pipes.out[R_END], buff, SLAVE_OUTPUT_MAX_LEN);
+                int chars_read = read(slave_workers[i].pipes.out[R_END], buff, SLAVE_OUTPUT_MAX_LEN);
+                buff[chars_read] = '\0';
                 fprintf(output_file, "slave (pid=%d):  %s\n", slave_workers[i].pid, buff);
 
                 slave_workers[i].finished_job = 1;
