@@ -56,6 +56,7 @@ view
 slave
 app
 
+result
+
 .bash_history
-.lesshst
-compile_commands.json
+.vscode

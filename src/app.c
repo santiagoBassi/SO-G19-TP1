@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/select.h>
+#include <fcntl.h>
 
 int create_slaves(slave_worker* slave_workers, int num_slaves) {
     for (int i = 0; i < num_slaves; i++) {
@@ -51,6 +52,9 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     int write_file_index = 0;
     int read_file_index = 0;
 
+    char output_buffer[num_file_args * SLAVE_OUTPUT_MAX_LEN];
+    int buffer_position = 0;
+
     while (read_file_index < num_file_args) {
         fd_set to_read_fds;
         fd_set to_write_fds;
@@ -83,17 +87,26 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
             }
 
             if (FD_ISSET(slave_workers[i].pipes.out[R_END], &to_read_fds)) {
-                char buff[SLAVE_OUTPUT_MAX_LEN];
-                int chars_read = read(slave_workers[i].pipes.out[R_END], buff, SLAVE_OUTPUT_MAX_LEN);
-                buff[chars_read] = '\0';
-
-                printf("%d: %s\n", slave_workers[i].pid, buff);
+                int chars_read = read(slave_workers[i].pipes.out[R_END], output_buffer + buffer_position, SLAVE_OUTPUT_MAX_LEN);
+                buffer_position += chars_read;
+                output_buffer[buffer_position++] = '\n';
+                output_buffer[buffer_position] = '\0';
 
                 slave_workers[i].finished_job = 1;
 
                 read_file_index++;
             }
         }
+    }
+
+    int output_fd = open(OUTPUT_FILE_NAME, O_RDWR | O_CREAT, OUTPUT_FILE_PERMS);
+    if(output_fd == -1){
+        fprintf(stderr, "Error: could not open file %s\n", OUTPUT_FILE_NAME);
+        return -1;
+    }
+    if(write(output_fd, output_buffer, buffer_position) == -1){
+        fprintf(stderr, "Error: could not write to %s\n", OUTPUT_FILE_NAME);
+        return -1;
     }
 
     return 0;
