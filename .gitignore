@@ -58,5 +58,8 @@ app
 
 result
 
+#editor configs
+.lesshst
+compile_commands.json
 .bash_history
 .vscode

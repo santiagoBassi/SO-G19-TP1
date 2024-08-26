@@ -52,8 +52,11 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     int write_file_index = 0;
     int read_file_index = 0;
 
-    char output_buffer[num_file_args * SLAVE_OUTPUT_MAX_LEN];
-    int buffer_position = 0;
+    FILE* output_file = fopen(OUTPUT_FILE_NAME, "w+");
+    if (output_file == NULL) {
+        fprintf(stderr, "Error: could not open output file\n");
+        return -1;
+    }
 
     while (read_file_index < num_file_args) {
         fd_set to_read_fds;
@@ -87,10 +90,9 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
             }
 
             if (FD_ISSET(slave_workers[i].pipes.out[R_END], &to_read_fds)) {
-                int chars_read = read(slave_workers[i].pipes.out[R_END], output_buffer + buffer_position, SLAVE_OUTPUT_MAX_LEN);
-                buffer_position += chars_read;
-                output_buffer[buffer_position++] = '\n';
-                output_buffer[buffer_position] = '\0';
+                char buff[SLAVE_OUTPUT_MAX_LEN];
+                read(slave_workers[i].pipes.out[R_END], buff, SLAVE_OUTPUT_MAX_LEN);
+                fprintf(output_file, "slave (pid: %d): %s\n", slave_workers[i].pid, buff);
 
                 slave_workers[i].finished_job = 1;
 
@@ -99,15 +101,7 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
         }
     }
 
-    int output_fd = open(OUTPUT_FILE_NAME, O_RDWR | O_CREAT, OUTPUT_FILE_PERMS);
-    if(output_fd == -1){
-        fprintf(stderr, "Error: could not open file %s\n", OUTPUT_FILE_NAME);
-        return -1;
-    }
-    if(write(output_fd, output_buffer, buffer_position) == -1){
-        fprintf(stderr, "Error: could not write to %s\n", OUTPUT_FILE_NAME);
-        return -1;
-    }
+    fclose(output_file);
 
     return 0;
 }
