@@ -56,5 +56,7 @@ view
 slave
 app
 
+files
+
 .bash_history
 .vscode
