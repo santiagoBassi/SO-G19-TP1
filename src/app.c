@@ -62,8 +62,8 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
         fd_set to_read_fds;
         fd_set to_write_fds;
         struct timeval timeout;
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 100;
+        timeout.tv_sec = 10;
+        timeout.tv_usec = 0;
 
         FD_ZERO(&to_read_fds);
         FD_ZERO(&to_write_fds);
