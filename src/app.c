@@ -52,6 +52,9 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     int write_file_index = 0;
     int read_file_index = 0;
 
+    shared_data shared_buffer[num_file_args];
+    int files_added = 0;
+
     FILE* output_file = fopen(OUTPUT_FILE_NAME, "w+");
     if (output_file == NULL) {
         fprintf(stderr, "Error: could not open output file\n");
@@ -93,7 +96,14 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
                 char buff[SLAVE_OUTPUT_MAX_LEN];
                 int chars_read = read(slave_workers[i].pipes.out[R_END], buff, SLAVE_OUTPUT_MAX_LEN);
                 buff[chars_read] = '\0';
-                fprintf(output_file, "slave (pid=%d):  %s\n", slave_workers[i].pid, buff);
+                fprintf(output_file, "slave (pid=%d):%s\n", slave_workers[i].pid, buff);
+
+                strncpy(shared_buffer[files_added].filename, buff + HASH_LEN + 1, FILENAME_MAX_LEN);
+                shared_buffer[files_added].filename[FILENAME_MAX_LEN-1] = '\0';
+                strncpy(shared_buffer[files_added].hash, buff, HASH_LEN);
+                shared_buffer[files_added].hash[HASH_LEN-1] = '\0';
+                shared_buffer[files_added].slave_pid = slave_workers[i].pid;
+                files_added++;
 
                 slave_workers[i].finished_job = 1;
 
