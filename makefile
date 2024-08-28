@@ -13,6 +13,8 @@ APPBINARY = app
 SLAVEBINARY = slave
 VIEWBINARY = view
 
+RESULT=result.txt
+
 .PHONY: all clean app slave view cleanObj
 
 all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) cleanObj
@@ -36,7 +38,7 @@ $(VIEWBINARY): $(VIEWOBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY)
+	rm -f $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) $(RESULT)
 	make cleanObj
 
 cleanObj:
