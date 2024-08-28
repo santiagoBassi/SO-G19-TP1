@@ -12,7 +12,9 @@
 #define FILENAME_MAX_LEN 256
 #define HASH_LEN 33 // 32 chars + 1 null terminated
 
-#define MAX_NUMBER_OF_SLAVES 5
+#define MAX_NUMBER_OF_SLAVES 5 
+#define NUM_FILES_IN_INITIAL_JOB 2
+#define SLAVE_OUTPUT_DELIM "\n"
 
 #define OUTPUT_FILE_NAME "./result.txt"
 
@@ -26,7 +28,11 @@ typedef struct {
 
 typedef struct {
     pid_t pid;
-    char finished_job;
+
+    char is_processing_job;
+    int num_files_in_job;
+    int num_files_processed_in_job;
+
     slave_pipes pipes;
 } slave_worker;
 
