@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/select.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 
 int create_slaves(slave_worker* slave_workers, int num_slaves) {
@@ -52,7 +53,13 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     int write_file_index = 0;
     int read_file_index = 0;
 
-    shared_data shared_buffer[num_file_args];
+    int shared_obj = shm_open("/shared_buffer", O_CREAT | O_RDWR, 0777);
+    if(shared_obj == -1){
+        fprintf(stderr, "Error: could not open shared memory object\n");
+        return -1;
+    }
+    ftruncate(shared_obj, num_file_args * sizeof(shared_data));
+    shared_data* shared_buffer = mmap(NULL, num_file_args * sizeof(shared_data), PROT_READ | PROT_WRITE, MAP_SHARED, shared_obj, 0);
     int files_added = 0;
 
     FILE* output_file = fopen(OUTPUT_FILE_NAME, "w+");
@@ -113,6 +120,7 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     }
 
     fclose(output_file);
+    close(shared_obj);
 
     return 0;
 }

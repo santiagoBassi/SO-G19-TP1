@@ -32,7 +32,7 @@ typedef struct {
 
 typedef struct {
     char filename[FILENAME_MAX_LEN];
-    char hash[HASH_LEN + 1];
+    char hash[HASH_LEN];
     pid_t slave_pid;
 } shared_data;
 
