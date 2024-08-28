@@ -2,21 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-/*
-    char *line = NULL;
-    size_t linecap = 0;
-    ssize_t linelen;
-
-    while ((linelen = getline(&line, &linecap, stdin)) > 0) {
-        line[linelen - 1] = '\0';
-
-        printf("%s", line);
-
-        fflush(stdout);
-    }
-
-    return 0;
-*/
 int main(void) {
     char bufferHash[BUFFER_SIZE]={0};
     
