@@ -3,8 +3,6 @@
 #include <unistd.h>
 
 int main(void) {
-    char bufferHash[BUFFER_SIZE]={0};
-    
     char * argv[3] = {NULL};
     argv[0] = MD5_PATH;
 
@@ -17,10 +15,10 @@ int main(void) {
     while ((linelen = getline(&line, &linecap, stdin)) > 0) {
         line[linelen - 1] = '\0';
 
-        int p1 = pipe(pipeFd);
-        if(p1 == -1){
+        int pipe_status = pipe(pipeFd);
+        if (pipe_status == -1){
             fprintf(stderr, "Error: Failed to create pipe");
-            //ACA QUE HACEMOS?? 
+            return -1;
         }
         
         int pid = fork();
@@ -28,14 +26,19 @@ int main(void) {
         if (pid != 0) {
             close(pipeFd[W_END]);
 
-            waitpid(pid, NULL, 0);
+            int md5_status;
+            waitpid(pid, &md5_status, 0);
 
-            int charsRead = read(pipeFd[R_END], bufferHash, BUFFER_SIZE);
-            bufferHash[charsRead - 1] = 0;
-            printf("%s", bufferHash);
+            if (md5_status != 0) {
+                printf("Error: md5 produced an error for this file");
+            } else {
+                char bufferHash[MD5_OUTPUT_BUFFER_SIZE];
+                int charsRead = read(pipeFd[R_END], bufferHash, MD5_OUTPUT_BUFFER_SIZE);
+                bufferHash[charsRead - 1] = 0;
+                printf("%s", bufferHash);
+            }
             fflush(stdout);
              
-            bufferHash[0] = 0;
             close(pipeFd[R_END]);
        } else {
             close(pipeFd[R_END]);

@@ -106,7 +106,6 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     }
     ftruncate(shared_obj, num_file_args * sizeof(shared_data));
     shared_data* shared_buffer = mmap(NULL, num_file_args * sizeof(shared_data), PROT_READ | PROT_WRITE, MAP_SHARED, shared_obj, 0);
-    int files_added = 0;
 
     FILE* output_file = fopen(OUTPUT_FILE_NAME, "w+");
     if (output_file == NULL) {

@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define MD5_PATH "/usr/bin/md5sum"
-#define BUFFER_SIZE 256
+#define MD5_OUTPUT_BUFFER_SIZE 256
 
 #define R_END 0
 #define W_END 1
