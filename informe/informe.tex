@@ -46,7 +46,15 @@ El siguiente informe expone los apectos fundamentales del Trabajo Práctico Nº1
 \section{Decisiones de diseño}
 
 \subsection{Master}
+Se optó por construir la aplicación en funciones pequeñas, lo que permite una mayor versatilidad y modularidad en el diseño. Inicialmente, a cada esclavo se le asigna una cantidad de archivos configurada mediante la macro NUM\_FILES\_IN\_INITIAL\_JOB. A medida que los esclavos completan su trabajo, se les asignan nuevos archivos uno por uno hasta que todos han sido procesados. Este enfoque se eligió para evitar situaciones en las que un esclavo recibe archivos pesados y otro archivos livianos, lo que podría causar que uno termine rápidamente mientras el otro continúa trabajando, desperdiciando así capacidad de procesamiento.
+
+Además, los resultados generados por los esclavos se almacenan tanto en un archivo de salida como en un buffer compartido mediante el uso de memoria compartida. Esto permite que, si el proceso view se ejecuta, pueda acceder a la información necesaria para mostrar los datos en tiempo real.
+
+Finalmente, el código incorpora un manejo básico de errores en cada etapa crítica, como la creación de pipes, la duplicación de descriptores de archivos y la creación de procesos. Esto garantiza que el sistema pueda reaccionar adecuadamente ante posibles fallos, minimizando su impacto y facilitando la depuración.
+
 \subsection{Slaves}
+Los procesos esclavos son los encargados de calcular el hash MD5 de los archivos. Para ello, emplean el programa md5sum, que toma como parámetro el nombre de un archivo y genera su hash correspondiente. Hemos optado por que los esclavos lean los nombres de los archivos a procesar desde la entrada estándar y, posteriormente, impriman el hash resultante en la salida estándar. Este enfoque permite que, una vez que el esclavo está en ejecución, podamos enviarle nuevos archivos a medida que finaliza con los anteriores, lo cual no sería posible si los archivos se proporcionaran como parámetros al iniciar el proceso.
+
 \subsection{View}
 
 \subsection{Comunicación entre procesos}
@@ -85,6 +93,12 @@ sem_master
 \end{lstlisting}
 
 \section{Limitaciones}
+
+Una de las principales limitaciones del sistema es la eficiencia en la asignación de trabajos. Actualmente, el sistema asigna archivos a los esclavos de uno en uno después de una carga inicial, lo cual puede no ser óptimo cuando los archivos tienen tamaños similares. Para mejorar el rendimiento y la utilización de los recursos, especialmente en entornos con archivos de tamaños uniformes, sería beneficioso implementar un mecanismo más dinámico para la asignación de trabajos.
+
+Otra limitación relevante es la flexibilidad en el manejo de errores. Aunque el sistema incluye un manejo básico de errores, fortalecer la capacidad para detectar y gestionar fallos en la comunicación entre el proceso principal y los esclavos podría aumentar la robustez del sistema. Incorporar mecanismos de reintento o procedimientos de recuperación ayudaría a minimizar el impacto de errores y a mejorar la estabilidad general del sistema.
+
+Además, el diseño actual del sistema está limitado a recibir únicamente una lista de archivos. Una mejora significativa sería permitir que el sistema acepte directorios completos, procesando todos los archivos contenidos en cada uno de los subdirectorios. Esta expansión en la funcionalidad permitiría una mayor flexibilidad y eficiencia en el manejo de grandes conjuntos de datos organizados en estructuras de directorios.
 
 \section{Problemas enfrentados}
 
