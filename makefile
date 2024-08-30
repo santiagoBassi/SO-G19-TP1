@@ -15,15 +15,15 @@ VIEWBINARY = view
 
 RESULT=result.txt
 
-.PHONY: all clean app slave view cleanObj
+.PHONY: all clean build_app build_slave build_view cleanObj
 
 all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) cleanObj
 
-app: $(APPBINARY)
+build_app: $(APPBINARY)
 
-slave: $(SLAVEBINARY)
+build_slave: $(SLAVEBINARY)
 
-view: $(VIEWBINARY)
+build_view: $(VIEWBINARY)
 
 $(APPBINARY): $(APPOBJ)
 	$(CC) $(CFLAGS) -o $(APPBINARY) $(APPOBJ)
@@ -39,7 +39,7 @@ $(VIEWBINARY): $(VIEWOBJ)
 
 clean:
 	rm -f $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) $(RESULT)
-	make cleanObj
+	$(MAKE) cleanObj
 
 cleanObj:
 	rm -f $(APPOBJ) $(SLAVEOBJ) $(VIEWOBJ)

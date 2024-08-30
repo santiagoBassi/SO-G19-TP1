@@ -1,4 +1,5 @@
 #include <app.h>
+#include <shared_data.h>
 #include <utils.h>
 
 #include <string.h>
@@ -87,7 +88,7 @@ int process_slave_output(char* slave_output, FILE* output_file, pid_t slave_pid,
     char* slave_output_on_file = strtok(slave_output, SLAVE_OUTPUT_DELIM);
 
     while (slave_output_on_file != NULL) {
-        fprintf(output_file, "slave (pid=%d):%s\n", slave_pid, slave_output_on_file);
+        fprintf(output_file, "slave (pid=%d): %s\n", slave_pid, slave_output_on_file);
         add_info_to_shared_data(&shared_buffer[num_files_processed + files_added], slave_output_on_file, slave_pid, share_sem);
 
         slave_output_on_file = strtok(NULL, SLAVE_OUTPUT_DELIM);
@@ -113,24 +114,19 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
 
     while (read_file_index < num_file_args) {
         fd_set to_read_fds;
-        //fd_set to_write_fds;
         struct timeval timeout;
         timeout.tv_sec = 10;
         timeout.tv_usec = 0;
 
         FD_ZERO(&to_read_fds);
-        //FD_ZERO(&to_write_fds);
 
         int max_fd = 0;
         for (int i = 0; i < num_slaves; i++) {
-            //max_fd = (slave_workers[i].pipes.in[W_END] > max_fd) ? slave_workers[i].pipes.in[W_END] : max_fd;
             max_fd = (slave_workers[i].pipes.out[R_END] > max_fd) ? slave_workers[i].pipes.out[R_END] : max_fd;
 
-            //FD_SET(slave_workers[i].pipes.in[W_END], &to_write_fds);
             FD_SET(slave_workers[i].pipes.out[R_END], &to_read_fds);
         }
 
-        // select(max_fd + 1, &to_read_fds, &to_write_fds, NULL, &timeout); 
         select(max_fd + 1, &to_read_fds, NULL, NULL, &timeout); 
 
         for (int i = 0; i < num_slaves; i++) {
@@ -189,18 +185,24 @@ int main(int argc, char * argv[]){
 
     sem_t* share_sem = sem_open(SHARED_NAME, O_CREAT, 0777, 0);
 
-    shared_data* shared_buffer = create_shared_memory(num_file_args * sizeof(shared_data));
+    shared_data* shared_buffer = create_shared_memory((num_file_args + 1) * sizeof(shared_data));
     if(shared_buffer == NULL) return -1;
 
     printf("%s\n", SHARED_NAME);
     fflush(stdout);
 
     sleep(WAIT_DURATION);
+
     execute_jobs_on_files(slave_workers, num_slaves, argv + 1, num_file_args, output_file, share_sem, shared_buffer);
 
     fclose(output_file);
     close_pipes(slave_workers, num_slaves);
+
+    // prevets blocking in ./view
+    sem_post(share_sem);
+
     sem_close(share_sem);
+
     munmap(shared_buffer, num_file_args * sizeof(shared_data));
     shm_unlink(SHARED_NAME);
 
