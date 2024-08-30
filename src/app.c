@@ -209,6 +209,7 @@ int main(int argc, char * argv[]){
     sem_post(share_sem);
 
     sem_close(share_sem);
+    sem_unlink(SHARED_NAME);
 
     munmap(shared_buffer, shared_buff_size);
     shm_unlink(SHARED_NAME);
