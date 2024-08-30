@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MD5_PATH "/usr/bin/md5sum"
 

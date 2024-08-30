@@ -1,14 +1,7 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <app.h>
-#include <shared_data.h>
-#include <utils.h>
 
-#include <string.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/select.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <semaphore.h>
 
 int create_slaves(slave_worker* slave_workers, int num_slaves) {
     for (int i = 0; i < num_slaves; i++) {

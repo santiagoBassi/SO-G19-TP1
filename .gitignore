@@ -63,3 +63,8 @@ result.txt
 compile_commands.json
 .bash_history
 .vscode
+
+pvs-analyze.sh
+PVS-Studio.log
+report.tasks
+strace_out

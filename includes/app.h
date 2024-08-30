@@ -4,6 +4,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <shared_data.h>
+#include <utils.h>
+#include <string.h>
+#include <sys/select.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <semaphore.h>
 
 #define R_END 0
 #define W_END 1
