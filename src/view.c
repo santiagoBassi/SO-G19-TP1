@@ -60,6 +60,7 @@ int main() {
     }
 
     sem_close(share_sem);
+    sem_unlink(shared_name);
 
     return 0;
 }
