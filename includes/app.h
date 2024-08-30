@@ -8,6 +8,10 @@
 #define R_END 0
 #define W_END 1
 
+#define WAIT_DURATION 2
+
+#define SHARED_NAME "/md5view"
+
 #define SLAVE_OUTPUT_MAX_LEN 256
 #define FILENAME_MAX_LEN 256
 #define HASH_LEN 33 // 32 chars + 1 null terminated
