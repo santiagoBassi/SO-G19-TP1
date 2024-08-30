@@ -179,7 +179,7 @@ int main(int argc, char * argv[]){
     slave_worker slave_workers[MAX_NUMBER_OF_SLAVES]; 
 
     int num_file_args = argc - 1;
-    const int num_slaves = min(MAX_NUMBER_OF_SLAVES, num_file_args / NUM_FILES_IN_INITIAL_JOB);
+    const int num_slaves = min(MAX_NUMBER_OF_SLAVES, div_ints_ceil(num_file_args, NUM_FILES_IN_INITIAL_JOB));
 
     if (create_slaves(slave_workers, num_slaves) == -1) {
         fprintf(stderr, "Error: could not create slaves");
