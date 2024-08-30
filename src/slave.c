@@ -1,6 +1,7 @@
 #include <slave.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 int main(void) {
     char * argv[3] = {NULL};
@@ -8,12 +9,10 @@ int main(void) {
 
     int pipeFd[2];
 
-    char *line = NULL;
-    size_t linecap = 0;
-    ssize_t linelen;
+    char line[FILE_NAME_MAX_LEN];
 
-    while ((linelen = getline(&line, &linecap, stdin)) > 0) {
-        line[linelen - 1] = '\0';
+    while (fgets(line, FILE_NAME_MAX_LEN, stdin) != NULL) {
+        line[strlen(line) - 1] = '\0';
 
         int pipe_status = pipe(pipeFd);
         if (pipe_status == -1){
@@ -30,12 +29,12 @@ int main(void) {
             waitpid(pid, &md5_status, 0);
 
             if (md5_status != 0) {
-                printf("Error: md5 produced an error for this file");
+                printf("Error: md5 produced an error for this file\n");
             } else {
                 char bufferHash[MD5_OUTPUT_BUFFER_SIZE];
                 int charsRead = read(pipeFd[R_END], bufferHash, MD5_OUTPUT_BUFFER_SIZE);
                 bufferHash[charsRead - 1] = 0;
-                printf("%s", bufferHash);
+                printf("%s\n", bufferHash);
             }
             fflush(stdout);
              

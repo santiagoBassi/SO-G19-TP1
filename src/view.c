@@ -6,17 +6,16 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <semaphore.h>
+#include <string.h>
 
-size_t read_shared_name(char** shared_name){
-    char* name = NULL;
-    size_t cap = 0;
-    ssize_t len = getline(&name, &cap, stdin);
-    if (len == -1){
+int read_shared_name(char* shared_name){
+    if (fgets(shared_name, SHARED_NAME_MAX_LEN, stdin) == NULL) {
         fprintf(stderr, "Error: could not read semaphore name\n");
         return -1;
     }
-    name[len-1] = '\0';
-    *shared_name = name;
+
+    int len = strlen(shared_name);
+    shared_name[len-1] = '\0';
     return len-1;
 }
 
@@ -42,20 +41,25 @@ int show_results(shared_data* shared_buffer, int index){
 int main() {
     int results_displayed = 0;
 
-    char* shared_name;
-    int shared_name_len = read_shared_name(&shared_name);
+    char shared_name[SHARED_NAME_MAX_LEN];
+    int shared_name_len = read_shared_name(shared_name);
     if(shared_name_len == -1) return -1;
 
     sem_t* share_sem = sem_open(shared_name, O_CREAT, 0777, 0);
     shared_data* shared_buffer = map_shared_memory(shared_name);
 
-    if(shared_buffer == NULL) return -1;
+    if(shared_buffer == NULL) {
+        sem_close(share_sem);
+        return -1;
+    }
 
     int data_incoming = 1;
-    while(data_incoming){
+    while (data_incoming) {
         sem_wait(share_sem);
         data_incoming = show_results(shared_buffer, results_displayed++);
     }
+
+    sem_close(share_sem);
 
     return 0;
 }

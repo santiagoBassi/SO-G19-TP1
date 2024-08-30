@@ -78,8 +78,9 @@ void add_info_to_shared_data(shared_data* data, char* slave_output_on_file, pid_
     strncpy(data->filename, slave_output_on_file + HASH_LEN + 1, FILENAME_MAX_LEN);
     data->filename[FILENAME_MAX_LEN-1] = '\0';
     strncpy(data->hash, slave_output_on_file, HASH_LEN);
-    data->hash[HASH_LEN-1] = '\0';
+    data->hash[HASH_LEN - 1] = '\0';
     data->slave_pid = slave_pid;
+
     sem_post(share_sem);
 }
 
@@ -114,23 +115,28 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
 
     while (read_file_index < num_file_args) {
         fd_set to_read_fds;
+        fd_set to_write_fds;
+
         struct timeval timeout;
         timeout.tv_sec = 10;
         timeout.tv_usec = 0;
 
         FD_ZERO(&to_read_fds);
+        FD_ZERO(&to_write_fds);
 
         int max_fd = 0;
         for (int i = 0; i < num_slaves; i++) {
             max_fd = (slave_workers[i].pipes.out[R_END] > max_fd) ? slave_workers[i].pipes.out[R_END] : max_fd;
+            max_fd = (slave_workers[i].pipes.in[W_END] > max_fd) ? slave_workers[i].pipes.in[W_END] : max_fd;
 
             FD_SET(slave_workers[i].pipes.out[R_END], &to_read_fds);
+            FD_SET(slave_workers[i].pipes.in[W_END], &to_write_fds);
         }
 
-        select(max_fd + 1, &to_read_fds, NULL, NULL, &timeout); 
+        select(max_fd + 1, &to_read_fds, &to_write_fds, NULL, &timeout); 
 
         for (int i = 0; i < num_slaves; i++) {
-            if (write_file_index < num_file_args && !slave_workers[i].is_processing_job) //&& FD_ISSET(slave_workers[i].pipes.in[W_END], &to_write_fds)) {
+            if (write_file_index < num_file_args && !slave_workers[i].is_processing_job)
                 write_file_index += add_job_to_slave(files + write_file_index, 1, &slave_workers[i]);
 
             if (FD_ISSET(slave_workers[i].pipes.out[R_END], &to_read_fds)) {
@@ -185,7 +191,8 @@ int main(int argc, char * argv[]){
 
     sem_t* share_sem = sem_open(SHARED_NAME, O_CREAT, 0777, 0);
 
-    shared_data* shared_buffer = create_shared_memory((num_file_args + 1) * sizeof(shared_data));
+    size_t shared_buff_size = (num_file_args + 1) * sizeof(shared_data);
+    shared_data* shared_buffer = create_shared_memory(shared_buff_size);
     if(shared_buffer == NULL) return -1;
 
     printf("%s\n", SHARED_NAME);
@@ -203,7 +210,7 @@ int main(int argc, char * argv[]){
 
     sem_close(share_sem);
 
-    munmap(shared_buffer, num_file_args * sizeof(shared_data));
+    munmap(shared_buffer, shared_buff_size);
     shm_unlink(SHARED_NAME);
 
     return 0;
