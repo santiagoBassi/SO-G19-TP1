@@ -10,6 +10,11 @@ int read_shared_name(char* shared_name){
     }
 
     int len = strlen(shared_name);
+    if(len == 0){
+        fprintf(stderr, "Error: could not read semaphore name\n");
+        return -1;
+    }
+    
     shared_name[len-1] = '\0';
     return len-1;
 }

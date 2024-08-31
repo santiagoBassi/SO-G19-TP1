@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MD5_PATH "/usr/bin/md5sum"
+#define MD5_PATH "../usr/bin/md5sum"
 
 #define FILE_NAME_MAX_LEN 256
 #define HASH_LEN 32

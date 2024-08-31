@@ -68,3 +68,4 @@ pvs-analyze.sh
 PVS-Studio.log
 report.tasks
 strace_out
+.gdb_history
