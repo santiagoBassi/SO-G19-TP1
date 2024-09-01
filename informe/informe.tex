@@ -57,6 +57,8 @@ Los procesos esclavos son los encargados de calcular el hash MD5 de los archivos
 
 \subsection{View}
 
+El proceso view se encarga de leer los datos que el proceso aplicación escribe en el búfer de memoria compartida y mostrarlos en pantalla. Al utilizar memoria compartida, es esencial abordar el problema de las condiciones de carrera, que pueden surgir cuando múltiples procesos acceden concurrentemente a los mismos recursos. Para mitigar este riesgo, se implementaron semáforos como mecanismo de sincronización. Además, se decidió leer los nombres del semáforo y del búfer desde la entrada estándar, lo que confiere mayor flexibilidad al proceso view, permitiendo su reutilización en futuros escenarios con cambios mínimos.
+
 \subsection{Comunicación entre procesos}
 
 El proceso master se comunica con los procesos slaves mediante pipes. Por cada slave existen dos pipes, un pipe de entrada al slave y otro pipe de salida del slave. El master utiliza select(2) para determinar si alguno de los pipes de salidas tiene datos para ser leídos, podiendo así determinar cuando el slave termina de procesar un archivo del trabajo. Luego, el proceso master se comunica con el proceso view mediante un shared buffer, para evitar condiciones de carrera se emplean semáforos. (Ver figura \ref{fig:diagramaComunicacion})
