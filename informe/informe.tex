@@ -91,8 +91,9 @@ $> ./app file1 file2 ... fileN | ./view
 El proceso vista puede ser ejecutado de forma independiente del proceso principal, si el proceso principal está corriendo, se puede ejecutar el proceso vista y ingresar el nombre del semaforo  por teclado (provisto por salida estandar cuando se ejecuta ./app).
 \begin{lstlisting}[language=bash]
 $> ./view
-sem_master
+/md5view
 \end{lstlisting}
+Siendo /md5view el nombre asignado al semaforo y al objeto de memoria compartida (modificable en app.h).
 
 \section{Limitaciones}
 
