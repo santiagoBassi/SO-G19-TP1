@@ -27,7 +27,9 @@ void* map_shared_memory(char* shared_name){
     }
     struct stat buf;
     fstat(shared_obj, &buf);
-    return mmap(NULL, buf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shared_obj, 0);
+    void * dir = mmap(NULL, buf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shared_obj, 0);
+    close(shared_obj);
+    return dir;
 }
 
 int show_results(shared_data* shared_buffer, int index){

@@ -99,7 +99,9 @@ void* create_shared_memory(size_t size){
         return NULL;
     }
     ftruncate(shared_obj, size);
-    return mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shared_obj, 0);
+    void * dir = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shared_obj, 0);
+    close(shared_obj);
+    return dir;
 }
 
 int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* files[], int num_file_args, FILE* output_file, sem_t* share_sem, shared_data* shared_buffer) {
