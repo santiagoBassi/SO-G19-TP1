@@ -112,10 +112,6 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
         fd_set to_read_fds;
         fd_set to_write_fds;
 
-        struct timeval timeout;
-        timeout.tv_sec = 10;
-        timeout.tv_usec = 0;
-
         FD_ZERO(&to_read_fds);
         FD_ZERO(&to_write_fds);
 
@@ -128,7 +124,7 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
             FD_SET(slave_workers[i].pipes.in[W_END], &to_write_fds);
         }
 
-        select(max_fd + 1, &to_read_fds, &to_write_fds, NULL, &timeout); 
+        select(max_fd + 1, &to_read_fds, &to_write_fds, NULL, NULL); 
 
         for (int i = 0; i < num_slaves; i++) {
             if (write_file_index < num_file_args && !slave_workers[i].is_processing_job)
