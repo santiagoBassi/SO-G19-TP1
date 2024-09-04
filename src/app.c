@@ -17,6 +17,10 @@ int create_slaves(slave_worker* slave_workers, int num_slaves) {
         if (pid == -1) return -1;
 
         if (pid == 0) {
+            for(int j=0; j<i; j++){
+                close(slave_workers[j].pipes.in[W_END]);
+                close(slave_workers[j].pipes.out[R_END]);
+            }
             close(slave_workers[i].pipes.in[W_END]);
             close(slave_workers[i].pipes.out[R_END]);
 
