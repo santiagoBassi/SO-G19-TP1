@@ -1,7 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <view.h>
-
 
 int read_shared_name(char* shared_name){
     if (fgets(shared_name, SHARED_NAME_MAX_LEN, stdin) == NULL) {
