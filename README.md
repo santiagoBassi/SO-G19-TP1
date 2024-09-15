@@ -1,4 +1,4 @@
-# TP1 - Sistemas Operativos 72.11 - Grupo 9
+# TP1 - Sistemas Operativos 72.11 - Grupo 19
 
 ## Instrucciones de compilación
 
@@ -18,6 +18,8 @@ Para ejecutar la aplicación, ejecutar dentro del contenedor:
 ```bash
 ./app file1 file2 ... fileN
 ```
+
+la salida se guarda en "results.txt".
 
 ### Ejecución slave 
 
