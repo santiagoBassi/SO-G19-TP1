@@ -17,7 +17,7 @@ RESULT=result.txt
 
 .PHONY: all clean build_app build_slave build_view cleanObj
 
-all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) cleanObj
+all: $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) #cleanObj
 
 build_app: $(APPBINARY)
 
@@ -39,7 +39,7 @@ $(VIEWBINARY): $(VIEWOBJ)
 
 clean:
 	rm -f $(APPBINARY) $(SLAVEBINARY) $(VIEWBINARY) $(RESULT)
-	$(MAKE) cleanObj
+#$(MAKE) cleanObj
 
 cleanObj:
 	rm -f $(APPOBJ) $(SLAVEOBJ) $(VIEWOBJ)

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <app.h>
 
 int create_slaves(slave_worker* slave_workers, int num_slaves) {
@@ -193,10 +195,10 @@ int main(int argc, char * argv[]){
     sleep(WAIT_DURATION);
 
     execute_jobs_on_files(slave_workers, num_slaves, argv + 1, num_file_args, output_file, share_sem, shared_buffer);
-
+ 
     fclose(output_file);
     close_pipes(slave_workers, num_slaves);
-
+ 
     // prevets blocking in ./view
     sem_post(share_sem);
 
