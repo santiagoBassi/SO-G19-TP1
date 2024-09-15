@@ -57,7 +57,11 @@ Los procesos esclavos son los encargados de calcular el hash MD5 de los archivos
 
 \subsection{View}
 
-El proceso view se encarga de leer los datos que el proceso aplicación escribe en el buffer de memoria compartida y mostrarlos en pantalla. En el buffer de memoria compartida guardamos estructuras con la información de salida de cada archivo procesado. Al utilizar memoria compartida, es esencial abordar el problema de las condiciones de carrera, que pueden surgir cuando múltiples procesos acceden concurrentemente a los mismos recursos. Para mitigar este riesgo, se implementaron semáforos como mecanismo de sincronización. Además, se decidió leer los nombres del semáforo y del búfer desde la entrada estándar, lo que confiere mayor flexibilidad al proceso view, permitiendo su reutilización en futuros escenarios con cambios mínimos.
+El proceso view se encarga de leer los datos que el proceso aplicación escribe en el buffer de memoria compartida y mostrarlos en pantalla. En el buffer de memoria compartida guardamos estructuras con la información de salida de cada archivo procesado. Al utilizar memoria compartida, para mitigar evitar problemas con condiciones de carrera, se implementaron semáforos como mecanismo de sincronización. 
+
+Cuando hay una nueva estructura cargada al buffer, desde el proceso app se hace un sem\_post, view se queda esperando en un sem\_wait hasta que haya más datos a leer. Para la condición de cierre de view, se agrega una estructura con campo pid en 0, esto supone un último sem\_post desde app para la lectura de esta estructura desde view. Está condición de cierre es necesaria, pues sem\_wait se queda bloqueado, aunque el semáforo se cierre.
+
+Además, se decidió leer los nombres del semáforo y del buffer desde la entrada estándar, lo que confiere mayor flexibilidad al proceso view, permitiendo su reutilización en futuros escenarios con cambios mínimos. view también puede recibir el nombre del semaforo/memoria compartida como argumento.
 
 \subsection{Comunicación entre procesos}
 
@@ -70,6 +74,8 @@ El proceso master se comunica con los procesos slaves mediante pipes. Por cada s
 \label{fig:diagramaComunicacion}
 \end{center}
 \end{figure}
+
+Cabe destacar que usamos el mismo nombre para tanto el semáforo como para el buffer compartido, esto no resulta un problema porque, si bien la memoria compartida y el semáforo se almacenan en el mismo lugar, para los semáforos se agrega un prefijo ``sem." automaticamente.
 
 \section{Compilación y ejecución}
 
@@ -88,12 +94,16 @@ Para también correr el proceso de vista, junto con el programa principal, usand
 \begin{lstlisting}[language=bash]
 $> ./app file1 file2 ... fileN | ./view
 \end{lstlisting}
-El proceso vista puede ser ejecutado de forma independiente del proceso principal, si el proceso principal está corriendo, se puede ejecutar el proceso vista y ingresar el nombre del semaforo  por teclado (provisto por salida estandar cuando se ejecuta ./app).
+El proceso vista puede ser ejecutado de forma independiente del proceso principal, si el proceso principal está corriendo, se puede ejecutar el proceso vista y ingresar el nombre del semaforo  por entrada estandar (provisto por salida estandar cuando se ejecuta ./app). El proceso principal espera, por defecto, 2 segundos para que se conecte el proceso vista.
 \begin{lstlisting}[language=bash]
 $> ./view
 /md5view
 \end{lstlisting}
-Siendo /md5view el nombre asignado al semaforo y al objeto de memoria compartida (modificable en app.h).
+El proceso vista también puede recibir el nombre del semáforo/memoria compartida como argumento.
+\begin{lstlisting}[language=bash]
+$> ./view /md5view
+\end{lstlisting}
+Siendo /md5view el nombre asignado al semaforo y al objeto de memoria compartida (modificable en app.h)
 
 \section{Limitaciones}
 
