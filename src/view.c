@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <view.h>
 
-
 int read_shared_name(char* shared_name){
     if (fgets(shared_name, SHARED_NAME_MAX_LEN, stdin) == NULL) {
         fprintf(stderr, "Error: could not read semaphore name\n");
@@ -40,12 +39,18 @@ int show_results(shared_data* shared_buffer, int index){
     return 1;
 }
 
-int main() {
+int main(int argc, char * argv[]) {
     int results_displayed = 0;
 
     char shared_name[SHARED_NAME_MAX_LEN];
-    int shared_name_len = read_shared_name(shared_name);
-    if(shared_name_len == -1) return -1;
+    
+    if(argc == 2){
+        strcpy(shared_name, argv[1]);
+    }else{
+        int shared_name_len = read_shared_name(shared_name);
+        if(shared_name_len == -1) return -1;
+    }
+    
 
     sem_t* share_sem = sem_open(shared_name, O_CREAT, 0777, 0);
     shared_data* shared_buffer = map_shared_memory(shared_name);

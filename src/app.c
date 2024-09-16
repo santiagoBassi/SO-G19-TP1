@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <app.h>
 
-
 int create_slaves(slave_worker* slave_workers, int num_slaves) {
     for (int i = 0; i < num_slaves; i++) {
         int pipe_status_in = pipe(slave_workers[i].pipes.in);
@@ -198,7 +197,7 @@ int main(int argc, char * argv[]){
     sleep(WAIT_DURATION);
 
     execute_jobs_on_files(slave_workers, num_slaves, argv + 1, num_file_args, output_file, share_sem, shared_buffer);
-
+ 
     fclose(output_file);
     close_slaves(slave_workers, num_slaves);
 

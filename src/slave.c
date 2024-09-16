@@ -13,13 +13,9 @@ int main(void)
 
     while (fgets(line, FILE_NAME_MAX_LEN, stdin) != NULL)
     {
-
         int len = strlen(line);
 
-        if (len == 0)
-        {
-            continue;
-        }
+        if (len <= 1) break;
 
         line[len - 1] = '\0';
 
