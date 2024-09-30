@@ -11,6 +11,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <semaphore.h>
+#include <wait.h>
 
 #define R_END 0
 #define W_END 1

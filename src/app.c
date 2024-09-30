@@ -152,12 +152,14 @@ int execute_jobs_on_files(slave_worker* slave_workers, int num_slaves, char* fil
     return 0;
 }
 
-int close_pipes(slave_worker* slave_workers, int num_slaves) {
+int close_slaves(slave_worker* slave_workers, int num_slaves) {
     for (int i = 0; i < num_slaves; i++) {
         close(slave_workers[i].pipes.in[W_END]);
         close(slave_workers[i].pipes.out[R_END]);
+        int stat;
+        pid_t pid = waitpid(slave_workers[i].pid, &stat, 0);
+        if(pid == -1) return -1;
     }
-
     return 0;
 }
 
@@ -197,8 +199,8 @@ int main(int argc, char * argv[]){
     execute_jobs_on_files(slave_workers, num_slaves, argv + 1, num_file_args, output_file, share_sem, shared_buffer);
  
     fclose(output_file);
-    close_pipes(slave_workers, num_slaves);
- 
+    close_slaves(slave_workers, num_slaves);
+
     // prevets blocking in ./view
     sem_post(share_sem);
 
