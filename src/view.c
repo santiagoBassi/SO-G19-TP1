@@ -45,7 +45,7 @@ int main(int argc, char * argv[]) {
     char shared_name[SHARED_NAME_MAX_LEN];
     
     if(argc == 2){
-        strcpy(shared_name, argv[1]);
+        strncpy(shared_name, argv[1], SHARED_NAME_MAX_LEN);
     }else{
         int shared_name_len = read_shared_name(shared_name);
         if(shared_name_len == -1) return -1;

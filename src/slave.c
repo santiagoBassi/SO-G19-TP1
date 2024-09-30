@@ -1,74 +1,52 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <slave.h>
+#include <stdio.h>
+#include <ctype.h>
+
+int is_valid_input(const char* input) {
+    for (int i = 0; input[i] != '\0'; i++)
+        if (!isalnum(input[i]) && input[i] != '.' && input[i] != '/' && input[i] != '_')
+            return 0;
+
+    return 1;
+}
 
 int main(void)
 {
-    char *argv[3] = {NULL};
-    argv[0] = MD5_PATH;
-
-    int pipeFd[2];
-
     char line[FILE_NAME_MAX_LEN] = {0};
+    char command[COMMAND_MAX_LEN];
+    char bufferHash[MD5_OUTPUT_BUFFER_SIZE];
 
     while (fgets(line, FILE_NAME_MAX_LEN, stdin) != NULL)
     {
         int len = strlen(line);
 
         if (len <= 1) break;
-
         line[len - 1] = '\0';
 
-        int pipe_status = pipe(pipeFd);
-        if (pipe_status == -1)
-        {
-            fprintf(stderr, "Error: Failed to create pipe");
-            return -1;
+        if (!is_valid_input(line)) {
+            printf("Error: invalid input = %s\n", line);
+            break;
         }
 
-        int pid = fork();
+        snprintf(command, COMMAND_MAX_LEN, "md5sum %s", line);
 
-        if (pid != 0)
-        {
-            close(pipeFd[W_END]);
+        FILE* output = popen(command, "r");
 
-            int md5_status;
-            waitpid(pid, &md5_status, 0);
+        fgets(bufferHash, MD5_OUTPUT_BUFFER_SIZE, output);
+        len = strlen(bufferHash);
+        if (len <= 1) break;
+        bufferHash[len - 1] = '\0';
 
-            if (md5_status != 0)
-            {
-                printf("Error: md5 produced an error for this file\n");
-            }
-            else
-            {
-                char bufferHash[MD5_OUTPUT_BUFFER_SIZE];
-                int charsRead = read(pipeFd[R_END], bufferHash, MD5_OUTPUT_BUFFER_SIZE);
-                if (charsRead <= 0)
-                {
-                    printf("Error: md5 produced an error for this file\n");
-                }
-                else
-                {
-                    bufferHash[charsRead - 1] = 0;
-                    printf("%s\n", bufferHash);
-                }
-            }
-            fflush(stdout);
+        int status = pclose(output);
 
-            close(pipeFd[R_END]);
-        }
-        else
-        {
-            close(pipeFd[R_END]);
-            close(STDOUT_FILENO);
+        if (status == 0)
+            printf("%s\n", bufferHash);
+        else 
+            printf("Error: md5sum error for = %s\n", line);
 
-            dup(pipeFd[W_END]);
-            close(pipeFd[W_END]);
-
-            argv[1] = line;
-            
-            execve(MD5_PATH, argv, NULL);
-        }
+        fflush(stdout);
     }
 
     return 0;
